@@ -1,6 +1,6 @@
 # wivolunteer-api
 WiVolunteer App - API
 
-## Collaborator
+## Collaborators
 - Jess Toh
 - Tee Wenjie
