@@ -18,6 +18,28 @@ mongoose.connect(MONGOURI, { useNewUrlParser: true }, () =>
 db.on('error', (err) => console.log(err.message + ' is Mongod not running?'));
 db.on('disconnected', () => console.log('mongo disconnected'));
 
+// MIDDLEWARE
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+// ROUTES
+const userController = require('./controllers/user.js');
+app.use('/users', userController);
+
+const authController = require('./controllers/auth.js');
+app.use('/', authController);
+
+const eventController = require('./controllers/event.js');
+app.use('/events', eventController);
+
+const feedbackController = require('./controllers/feedback.js');
+app.use('/feedback', feedbackController);
+
+// catch nonexistant route
+app.get('*', (req, res) => {
+	res.status(404).json('Page not found');
+});
+
 // LISTEN
 app.listen(PORT, () => {
 	console.log(`WiVolunteer-API listening on port: ${PORT}`);

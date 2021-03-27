@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
 	password: { type: String, required: true },
 	contact: String,
 	interests: [String],
-	pastEvents: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
+	pastEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
 	address: String,
 	image: String,
 });

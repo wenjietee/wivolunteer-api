@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 
 // SCHEMA
 const feedbackSchema = new mongoose.Schema({
-	participant: { type: Schema.Types.ObjectId, ref: 'User' },
-	event: { type: Schema.Types.ObjectId, ref: 'Event' },
+	participant: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+	event: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' },
 	hasEnoughResources: [String],
 	isWellOrganised: Number,
 	isSatisfied: Number,
