@@ -1,2 +1,2 @@
 # wivolunteer-api
-API Backend for Wivolunteer app.
+WiVolunteer App - API
