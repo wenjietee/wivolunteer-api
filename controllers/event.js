@@ -11,7 +11,24 @@ router.get('/', (req, res) => {
 
 // Show individual event
 router.get('/:id', (req, res) => {
-	res.send('get individual event');
+	Event.findById(req.params.id)
+		.populate('organiser')
+		.populate('participants')
+		.populate('interested')
+		.exec()
+		.then((event) => {
+			if (!event) {
+				return res.status(404).json({
+					error: 'Event not found',
+				});
+			}
+			res.status(200).json(event);
+		})
+		.catch((err) => {
+			res.status(500).json({
+				error: err,
+			});
+		});
 });
 
 // Create a new event
