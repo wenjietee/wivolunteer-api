@@ -10,11 +10,11 @@ function generateJsonToken(foundUser, res) {
     };
     // Generate json web token and send to front end
     jsonwebtoken.sign(
-        { user },
+        user,
         process.env.JWT_SECRET,
         { expiresIn: "1d" },
         (err, jwtToken) => {
-            res.json({ jwtToken });
+            res.json({ jwtToken, user });
         }
     );
 }
