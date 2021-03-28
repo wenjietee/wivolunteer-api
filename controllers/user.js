@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const User = require("../models/user.js");
+const {generateJsonToken} = require("./helper");
 
 // ROUTES
 
@@ -26,7 +27,8 @@ router.post("/", (req, res) => {
             );
             req.body.username = req.body.email;
             User.create(req.body, (err, createdUser) => {
-                res.json(createdUser); // To change to auto-sign in after sign-up
+                // Auto-sign in after sign up. // To change to nodemailer for email confirmation
+                generateJsonToken(createdUser, res); 
             });
         }
     });
