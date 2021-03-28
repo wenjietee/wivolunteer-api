@@ -5,7 +5,6 @@ const app = express();
 const mongoose = require('mongoose');
 const db = mongoose.connection;
 const jwt = require("express-jwt");
-const jsonwebtoken = require("jsonwebtoken");
 
 // CONFIG
 const PORT = process.env.PORT || 3000;
@@ -23,6 +22,13 @@ db.on('disconnected', () => console.log('mongo disconnected'));
 // MIDDLEWARE
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+// Verify json web token
+app.use(jwt({secret: process.env.JWT_SECRET, algorithms: ["HS256"]}).unless({path: ["/users", "/login"]}), function(err, req, res, next) {	
+	// Send error message if json web token is not valid
+	if (err.name === "UnauthorizedError") {
+		res.status(401).json({error: "not authenticated"});
+	} 
+});
 
 // ROUTES
 const userController = require('./controllers/user.js');
