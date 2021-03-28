@@ -3,13 +3,21 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const User = require("../models/user.js");
-const {generateJsonToken} = require("./helper");
+const { generateJsonToken } = require("./helper");
 
 // ROUTES
 
 // Get user profile data
 router.get("/profile", (req, res) => {
     res.send("get user profile");
+});
+
+// Check if user is already authenticated
+router.get("/authenticate", (req, res) => {
+    const user = {};
+    user._id = req.user._id;
+    user.username = req.user.username;
+    res.json(user);
 });
 
 // Create new user
@@ -28,7 +36,7 @@ router.post("/", (req, res) => {
             req.body.username = req.body.email;
             User.create(req.body, (err, createdUser) => {
                 // Auto-sign in after sign up. // To change to nodemailer for email confirmation
-                generateJsonToken(createdUser, res); 
+                generateJsonToken(createdUser, res);
             });
         }
     });
