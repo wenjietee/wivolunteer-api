@@ -11,11 +11,26 @@ const jsonwebtoken = require("jsonwebtoken");
 router.post("/login", (req, res) => {
     User.findOne({ email: req.body.email }, (err, foundUser) => {
         if (!foundUser) {
+            // Send error code if user not found
             res.status(404).json({ error: "no user found" });
         } else {
             // Check if password is correct
             if (bcrypt.compareSync(req.body.password, foundUser.password)) {
-                res.json(foundUser);
+                // Set payload for json web token
+                const user = {
+                    _id: foundUser._id,
+                    email: foundUser.email,
+                    username: foundUser.username,
+                };
+                // Generate json web token and send to front end
+                jsonwebtoken.sign(
+                    { user },
+                    process.env.JWT_SECRET,
+                    { expiresIn: "1d" },
+                    (err, jwtToken) => {
+                        res.json({ jwtToken });
+                    }
+                );
             } else {
                 res.status(401).json({ error: "wrong password" });
             }

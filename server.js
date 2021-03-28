@@ -6,7 +6,6 @@ const mongoose = require('mongoose');
 const db = mongoose.connection;
 const jwt = require("express-jwt");
 const jsonwebtoken = require("jsonwebtoken");
-const cors = require("cors");
 
 // CONFIG
 const PORT = process.env.PORT || 3000;
@@ -24,7 +23,6 @@ db.on('disconnected', () => console.log('mongo disconnected'));
 // MIDDLEWARE
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cors());
 
 // ROUTES
 const userController = require('./controllers/user.js');
