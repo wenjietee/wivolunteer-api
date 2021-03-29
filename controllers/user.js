@@ -3,13 +3,15 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const User = require("../models/user.js");
-const { generateJsonToken } = require("./helper");
+const generateJsonToken = require("./helper").generateJsonToken;
 
 // ROUTES
 
 // Get user profile data
 router.get("/profile", (req, res) => {
-    res.send("get user profile");
+    User.findById(req.user._id, "-password -pastEvents", (err, foundUser) => {
+        res.json(foundUser);
+    });
 });
 
 // Check if user is already authenticated
