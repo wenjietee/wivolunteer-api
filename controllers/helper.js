@@ -12,7 +12,7 @@ function generateJsonToken(foundUser, res) {
     jsonwebtoken.sign(
         user,
         process.env.JWT_SECRET,
-        { expiresIn: "1d" },
+        { expiresIn: process.env.TOKEN_EXPIRE_TIME },
         (err, jwtToken) => {
             res.json({ jwtToken, user });
         }
