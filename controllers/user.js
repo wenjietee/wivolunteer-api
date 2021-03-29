@@ -3,7 +3,8 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const User = require("../models/user.js");
-const { generateJsonToken } = require("./helper");
+const Event = require("../models/event.js");
+const generateJsonToken = require("./helper").generateJsonToken;
 
 // ROUTES
 
@@ -45,6 +46,19 @@ router.post("/", (req, res) => {
 // Update User profile
 router.put("/profile", (req, res) => {
     res.send("update user profile");
+});
+
+// Get All Event related to Users
+router.get("/events", (req, res) => {
+    // Find events that user current join or past events
+    User.findById(req.user._id)
+        .populate("pastEvents")
+        .exec((err, foundUser) => {
+            // Find events that user organized
+            Event.find({organiser: req.user._id}, (err, organizedEvents) => {
+                res.json({joinedEvents: foundUser.pastEvents, organizedEvents});
+            })
+        });
 });
 
 // EXPORT
