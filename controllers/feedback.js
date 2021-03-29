@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const Event = require('../models/event.js');
-const User = require('../models/user.js');
 const Feedback = require('../models/feedback.js');
 
 //ROUTES
@@ -35,13 +33,25 @@ router.post('/:eventId', (req, res) => {
 	req.body.participant = req.user._id;
 	// Set event as params id
 	req.body.event = req.params.eventId;
-	// Create feedback
-	Feedback.create(req.body, (err, createdFeedback) => {
-		if (err) res.status(500).json({ error: err });
-		else {
-			res.status(201).json(createdFeedback);
+	// Check if user has already submitted feedback
+	Feedback.findOne(
+		{ event: req.body.event, participant: req.body.participant },
+		(err, foundFeedback) => {
+			if (foundFeedback)
+				res.status(403).json({
+					error: 'Feedback has already been submitted by user for this event.',
+				});
+			else {
+				// Create feedback
+				Feedback.create(req.body, (err, createdFeedback) => {
+					if (err) res.status(500).json({ error: err });
+					else {
+						res.status(201).json(createdFeedback);
+					}
+				});
+			}
 		}
-	});
+	);
 });
 
 // EXPORT
