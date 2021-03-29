@@ -47,6 +47,26 @@ router.get("/all", (req, res) => {
     });
 });
 
+// Get searched event
+router.get("/find", (req, res) => {
+	const { startDate, endDate } = setDateRange(req);
+	const categories = JSON.parse(req.query.cat); 
+    User.findById(req.user._id, (err, foundUser) => {
+        Event.find(
+            {	eventType: {$in: categories},
+                dateTime: {
+                    //only return result in a range of 1 month
+                    $gt: startDate,
+                    $lt: endDate,
+                },
+            },
+            (err, events) => {
+                res.json(events);
+            }
+        );
+    });
+});
+
 // Show individual event
 router.get("/:id", (req, res) => {
     res.send("get individual event");
