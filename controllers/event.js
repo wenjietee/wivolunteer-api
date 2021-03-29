@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Event = require('../models/event.js');
+const User = require('../models/user.js');
 
 //ROUTES
 
@@ -33,7 +34,14 @@ router.get('/:id', (req, res) => {
 
 // Create a new event
 router.post('/', (req, res) => {
-	res.send('create an event');
+	// get user id from jwt token ?? to confirm
+	// set current user as organiser ?? to confirm
+	Event.create(req.body, (err, createdEvent) => {
+		if (err) res.status(500).json({ error: err });
+		else {
+			res.status(201).json(createdEvent);
+		}
+	});
 });
 
 // Update event details
