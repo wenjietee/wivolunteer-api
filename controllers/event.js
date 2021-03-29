@@ -36,6 +36,7 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
 	// get user id from jwt token ?? to confirm
 	// set current user as organiser ?? to confirm
+	// check cloudinary handled on front or back
 	Event.create(req.body, (err, createdEvent) => {
 		if (err) res.status(500).json({ error: err });
 		else {
@@ -46,7 +47,16 @@ router.post('/', (req, res) => {
 
 // Update event details
 router.put('/:id/edit', (req, res) => {
-	res.send('edit an event');
+	Event.findByIdAndUpdate(
+		req.params.id.req.body,
+		{ new: true },
+		(err, updatedEvent) => {
+			if (err) res.status(500).json({ error: err });
+			else {
+				res.status(201).json(updatedEvent);
+			}
+		}
+	);
 });
 
 // Add participant and decrement event limit
