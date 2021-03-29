@@ -56,10 +56,6 @@ app.use('/events', eventController);
 const feedbackController = require('./controllers/feedback.js');
 app.use('/feedback', feedbackController);
 
-app.get('/', (req, res) => {
-	res.json('Test.');
-});
-
 // catch nonexistant route
 app.get('*', (req, res) => {
 	res.status(404).json('The server can not find the requested resource.');
