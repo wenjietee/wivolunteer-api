@@ -53,11 +53,16 @@ router.get("/events", (req, res) => {
     // Find events that user current join or past events
     User.findById(req.user._id)
         .populate("pastEvents")
+        .populate("interestedEvents")
         .exec((err, foundUser) => {
             // Find events that user organized
-            Event.find({organiser: req.user._id}, (err, organizedEvents) => {
-                res.json({joinedEvents: foundUser.pastEvents, organizedEvents});
-            })
+            Event.find({ organiser: req.user._id }, (err, organizedEvents) => {
+                res.json({
+                    joinedEvents: foundUser.pastEvents,
+                    interestedEvents: foundUser.interestedEvents,
+                    organizedEvents,
+                });
+            });
         });
 });
 
