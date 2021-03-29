@@ -113,7 +113,18 @@ router.put('/:id/drop', (req, res) => {
 
 // Add participant to event interested array
 router.put('/:id/interested', (req, res) => {
-	res.send('add user to interested array');
+	// Update event by removing particpant and increment limit
+	Event.findByIdAndUpdate(
+		req.params.id,
+		{ $push: { interested: req.user._id } },
+		{ new: true },
+		(err, updatedEvent) => {
+			if (err) res.status(500).json({ error: err });
+			else {
+				res.status(201).json(updatedEvent);
+			}
+		}
+	);
 });
 
 // EXPORT
