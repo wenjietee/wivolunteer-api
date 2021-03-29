@@ -5,7 +5,7 @@ const User = require('../models/user.js');
 
 //ROUTES
 
-// Show events of intererest with start date as Date.now()
+// Show events of interest with start date as Date.now()
 router.get('/', (req, res) => {
 	res.send('show all events');
 });
@@ -13,9 +13,9 @@ router.get('/', (req, res) => {
 // Show individual event
 router.get('/:id', (req, res) => {
 	Event.findById(req.params.id)
-		.populate('organiser')
-		.populate('participants')
-		.populate('interested')
+		.populate('organiser', 'username')
+		.populate('participants', 'username')
+		.populate('interested', 'username')
 		.exec()
 		.then((event) => {
 			if (!event) {
@@ -34,9 +34,8 @@ router.get('/:id', (req, res) => {
 
 // Create a new event
 router.post('/', (req, res) => {
-	// get user id from jwt token ?? to confirm
-	// set current user as organiser ?? to confirm
-	// check cloudinary handled on front or back
+	// Set organiser as current user
+	req.body.organiser = req.user._id;
 	Event.create(req.body, (err, createdEvent) => {
 		if (err) res.status(500).json({ error: err });
 		else {
@@ -48,7 +47,8 @@ router.post('/', (req, res) => {
 // Update event details
 router.put('/:id/edit', (req, res) => {
 	Event.findByIdAndUpdate(
-		req.params.id.req.body,
+		req.params,
+		id.req.body,
 		{ new: true },
 		(err, updatedEvent) => {
 			if (err) res.status(500).json({ error: err });
