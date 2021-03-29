@@ -47,12 +47,14 @@ router.post('/', (req, res) => {
 
 // Update event details
 router.put('/:id/edit', (req, res) => {
+	// Check if current user match organiser
 	Event.findOne({ organiser: req.user._id }, (err, foundEvent) => {
 		if (!foundEvent)
 			res
 				.status(403)
 				.json({ error: 'Unable to edit event, organiser mismatch.' });
 		else {
+			// Update event details
 			Event.findByIdAndUpdate(
 				req.params.id,
 				req.body,
@@ -68,14 +70,45 @@ router.put('/:id/edit', (req, res) => {
 	});
 });
 
-// Add participant and decrement event limit
+// Add participant and decrement limit
 router.put('/:id/join', (req, res) => {
-	res.send('add participant');
+	// Check if organiser attempts to join own event
+	Event.findOne({ organiser: req.user._id }, (err, foundEvent) => {
+		if (foundEvent)
+			res
+				.status(403)
+				.json({ error: 'Organiser cannot be added to participants' });
+		else {
+			// Update event by adding particpant and decrement limit
+			Event.findByIdAndUpdate(
+				req.params.id,
+				{ $push: { participants: req.user._id }, $inc: { limit: -1 } },
+				{ new: true },
+				(err, updatedEvent) => {
+					if (err) res.status(500).json({ error: err });
+					else {
+						res.status(201).json(updatedEvent);
+					}
+				}
+			);
+		}
+	});
 });
 
 // Remove participant and increment event limit
 router.put('/:id/drop', (req, res) => {
-	res.send('drop participant');
+	// Update event by removing particpant and increment limit
+	Event.findByIdAndUpdate(
+		req.params.id,
+		{ $pull: { participants: req.user._id }, $inc: { limit: 1 } },
+		{ new: true },
+		(err, updatedEvent) => {
+			if (err) res.status(500).json({ error: err });
+			else {
+				res.status(201).json(updatedEvent);
+			}
+		}
+	);
 });
 
 // Add participant to event interested array
