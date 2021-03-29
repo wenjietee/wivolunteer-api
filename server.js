@@ -5,14 +5,14 @@ const cors = require('cors');
 const app = express();
 const mongoose = require('mongoose');
 const db = mongoose.connection;
-const jwt = require("express-jwt");
+const jwt = require('express-jwt');
 
 // CONFIG
 const PORT = process.env.PORT || 3000;
 const MONGO_URI =
 	process.env.MONGO_ATLAS || 'mongodb://localhost:27017/wivolunteer-api';
 const CORS_OPTIONS = {
-	origin: '*', // whitelist all for dev, to add client URL before deployment
+	origin: process.env.WHITELIST, // whitelist all for dev, to add client URL before deployment
 	credentials: true,
 	'Access-Control-Allow-Credentials': true,
 	methods: 'GET,HEAD,PUT,POST,DELETE',
@@ -31,12 +31,17 @@ app.use(cors(CORS_OPTIONS));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // Verify json web token
-app.use(jwt({secret: process.env.JWT_SECRET, algorithms: ["HS256"]}).unless({path: ["/users", "/login"]}), function(err, req, res, next) {	
-	// Send error message if json web token is not valid
-	if (err.name === "UnauthorizedError") {
-		res.status(401).json({error: "not authenticated"});
-	} 
-});
+app.use(
+	jwt({ secret: process.env.JWT_SECRET, algorithms: ['HS256'] }).unless({
+		path: ['/users', '/login'],
+	}),
+	function (err, req, res, next) {
+		// Send error message if json web token is not valid
+		if (err.name === 'UnauthorizedError') {
+			res.status(401).json({ error: 'not authenticated' });
+		}
+	}
+);
 
 // ROUTES
 const userController = require('./controllers/user.js');
@@ -50,6 +55,10 @@ app.use('/events', eventController);
 
 const feedbackController = require('./controllers/feedback.js');
 app.use('/feedback', feedbackController);
+
+app.get('/', (req, res) => {
+	res.json('Test.');
+});
 
 // catch nonexistant route
 app.get('*', (req, res) => {
