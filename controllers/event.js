@@ -5,8 +5,9 @@ const User = require("../models/user.js");
 
 //ROUTES
 
-// Show events of interest with start date as Date.now()
+// Show events of interest with start date from selected date
 router.get("/", (req, res) => {
+	// If no date is selected, set selected date as today
     const filterDate = req.query.date || new Date();
     const startDate = new Date();
     startDate.setDate(filterDate.getDate() + 1);
@@ -16,7 +17,31 @@ router.get("/", (req, res) => {
         Event.find(
             {
                 eventType: { $in: foundUser.interests },
-                dateTime: {
+                dateTime: { //only return result in a range of 1 month
+                    $gt: startDate,
+                    $lt: endDate,
+                },
+            },
+            (err, events) => {
+                res.json(events);
+            }
+        );
+    });
+});
+
+// Get All Events
+// Show events of interest with start date from selected date
+router.get("/all", (req, res) => {
+	// If no date is selected, set selected date as today
+    const filterDate = req.query.date || new Date();
+    const startDate = new Date();
+    startDate.setDate(filterDate.getDate() + 1);
+    const endDate = new Date();
+    endDate.setDate(filterDate.getDate() + 30);
+    User.findById(req.user._id, (err, foundUser) => {
+        Event.find(
+            {
+                dateTime: { //only return result in a range of 1 month
                     $gt: startDate,
                     $lt: endDate,
                 },
