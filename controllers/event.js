@@ -5,7 +5,7 @@ const User = require('../models/user.js');
 
 //ROUTES
 
-// Show events of interest with start date as Date.now()
+// Show events of interest with start date 2 days from current date.
 router.get('/', (req, res) => {
 	res.send('show all events');
 });
@@ -36,6 +36,7 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
 	// Set organiser as current user
 	req.body.organiser = req.user._id;
+	// Create event
 	Event.create(req.body, (err, createdEvent) => {
 		if (err) res.status(500).json({ error: err });
 		else {
@@ -46,17 +47,25 @@ router.post('/', (req, res) => {
 
 // Update event details
 router.put('/:id/edit', (req, res) => {
-	Event.findByIdAndUpdate(
-		req.params,
-		id.req.body,
-		{ new: true },
-		(err, updatedEvent) => {
-			if (err) res.status(500).json({ error: err });
-			else {
-				res.status(201).json(updatedEvent);
-			}
+	Event.findOne({ organiser: req.user._id }, (err, foundEvent) => {
+		if (!foundEvent)
+			res
+				.status(403)
+				.json({ error: 'Unable to edit event, organiser mismatch.' });
+		else {
+			Event.findByIdAndUpdate(
+				req.params.id,
+				req.body,
+				{ new: true },
+				(err, updatedEvent) => {
+					if (err) res.status(500).json({ error: err });
+					else {
+						res.status(201).json(updatedEvent);
+					}
+				}
+			);
 		}
-	);
+	});
 });
 
 // Add participant and decrement event limit
