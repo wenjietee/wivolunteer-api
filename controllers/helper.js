@@ -19,4 +19,15 @@ function generateJsonToken(foundUser, res) {
     );
 }
 
-module.exports = { generateJsonToken };
+// Set date range of as 1 month
+function setDateRange(req) {
+    // If no date is selected, set selected date as today
+    const filterDate = req.query.date || new Date();
+    const startDate = new Date();
+    startDate.setDate(filterDate.getDate() + 1);
+    const endDate = new Date();
+    endDate.setDate(filterDate.getDate() + 30);
+    return { startDate, endDate };
+}
+
+module.exports = { generateJsonToken, setDateRange };
