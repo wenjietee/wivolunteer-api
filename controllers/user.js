@@ -46,7 +46,14 @@ router.post("/", (req, res) => {
 
 // Update User profile
 router.put("/profile", (req, res) => {
-    res.send("update user profile");
+    User.findByIdAndUpdate(
+        req.user._id,
+        { $set: req.body },
+        { new: true, projection:"-password -pastEvents" },
+        (err, updatedUser) => {
+            res.json(updatedUser);
+        }
+    );
 });
 
 // EXPORT
