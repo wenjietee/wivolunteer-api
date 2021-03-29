@@ -1,25 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const moment = require('moment');
 const Event = require('../models/event.js');
 
 //ROUTES
 
 // Show events of interest with start date 2 days from current date.
 router.get('/', (req, res) => {
-	// Set date range for mongo query
-	const startDate = moment().add(2, 'd').format('YYYY-MM-DD');
-	const endDate = moment().add(30, 'd').format('YYYY-MM-DD');
-	// Find events based on date query
-	Event.find(
-		{ dateTime: { $gte: startDate, $lte: endDate } },
-		(err, foundEvents) => {
-			if (err) res.status(404).json({ error: err });
-			else {
-				res.status(200).json(foundEvents);
-			}
-		}
-	);
+	res.send('show all events');
 });
 
 // Show individual event
