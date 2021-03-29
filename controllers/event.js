@@ -4,7 +4,7 @@ const Event = require('../models/event.js');
 
 //ROUTES
 
-// Show events of interest with start date 2 days from current date.
+// Show events of intererest with start date as Date.now()
 router.get('/', (req, res) => {
 	res.send('show all events');
 });
