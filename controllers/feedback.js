@@ -7,17 +7,19 @@ const Feedback = require('../models/feedback.js');
 //ROUTES
 
 // Fetch feedback info for the event
-router.get('/feedback/:id', (req, res) => {
-	Feedback.find({ event: req.params.id })
+router.get('/:eventId', (req, res) => {
+	Feedback.find({ event: req.params.eventId })
 		.populate('event', 'eventTitle')
 		.populate('participant', 'username')
 		.exec()
 		.then((feedbacks) => {
-			if (!feedbacks) {
+			// if no feedback found return error
+			if (!feedbacks || !feedbacks.length) {
 				return res.status(404).json({
 					error: 'No feedback avaliable.',
 				});
 			}
+			// return feedbacks
 			res.status(200).json(feedbacks);
 		})
 		.catch((err) => {
@@ -28,11 +30,11 @@ router.get('/feedback/:id', (req, res) => {
 });
 
 // Create a new feedback for the event
-router.post('/feedback/:id', (req, res) => {
+router.post('/:eventId', (req, res) => {
 	// Set participant as current user
 	req.body.participant = req.user._id;
 	// Set event as params id
-	req.body.event = req.params.id;
+	req.body.event = req.params.eventId;
 	// Create feedback
 	Feedback.create(req.body, (err, createdFeedback) => {
 		if (err) res.status(500).json({ error: err });
