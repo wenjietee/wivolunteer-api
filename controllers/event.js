@@ -73,26 +73,43 @@ router.put('/:id/edit', (req, res) => {
 // Add participant and decrement limit
 router.put('/:id/join', (req, res) => {
 	// Check if organiser attempts to join own event
-	Event.findOne({ organiser: req.user._id }, (err, foundEvent) => {
-		if (foundEvent)
-			res
-				.status(403)
-				.json({ error: 'Organiser cannot be added to participants' });
-		else {
-			// Update event by adding particpant and decrement limit
-			Event.findByIdAndUpdate(
-				req.params.id,
-				{ $push: { participants: req.user._id }, $inc: { limit: -1 } },
-				{ new: true },
-				(err, updatedEvent) => {
-					if (err) res.status(500).json({ error: err });
-					else {
-						res.status(201).json(updatedEvent);
+	Event.findOne(
+		{
+			organiser: req.user._id,
+		},
+		(err, foundEvent) => {
+			if (foundEvent)
+				res
+					.status(403)
+					.json({ error: 'Organiser cannot be added to participants' });
+			else {
+				// Check if participant has joined event
+				Event.findOne(
+					{ participants: { $in: req.user._id } },
+					(err, foundEvent) => {
+						if (foundEvent)
+							res
+								.status(403)
+								.json({ error: 'Participant already joined event' });
+						else {
+							// Update event by adding particpant and decrement limit
+							Event.findByIdAndUpdate(
+								req.params.id,
+								{ $push: { participants: req.user._id }, $inc: { limit: -1 } },
+								{ new: true },
+								(err, updatedEvent) => {
+									if (err) res.status(500).json({ error: err });
+									else {
+										res.status(201).json(updatedEvent);
+									}
+								}
+							);
+						}
 					}
-				}
-			);
+				);
+			}
 		}
-	});
+	);
 });
 
 // Remove participant and increment event limit
