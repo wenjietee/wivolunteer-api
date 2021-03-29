@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const moment = require('moment');
 const Event = require('../models/event.js');
 const User = require('../models/user.js');
 
@@ -7,7 +8,16 @@ const User = require('../models/user.js');
 
 // Show events of interest with start date 2 days from current date.
 router.get('/', (req, res) => {
-	res.send('show all events');
+	// Find events based on date query
+	Event.find(
+		{ dateTime: { $gte: '2021-03-28', $lte: '2021-04-01' } },
+		(err, foundEvents) => {
+			if (err) res.status(404).json({ error: err });
+			else {
+				res.status(200).json(foundEvents);
+			}
+		}
+	);
 });
 
 // Show individual event
