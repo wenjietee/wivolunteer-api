@@ -3,13 +3,16 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const User = require("../models/user.js");
-const { generateJsonToken } = require("./helper");
+const Event = require("../models/event.js");
+const generateJsonToken = require("./helper").generateJsonToken;
 
 // ROUTES
 
 // Get user profile data
 router.get("/profile", (req, res) => {
-    res.send("get user profile");
+    User.findById(req.user._id, "-password -pastEvents", (err, foundUser) => {
+        res.json(foundUser);
+    });
 });
 
 // Check if user is already authenticated
@@ -44,7 +47,32 @@ router.post("/", (req, res) => {
 
 // Update User profile
 router.put("/profile", (req, res) => {
-    res.send("update user profile");
+    User.findByIdAndUpdate(
+        req.user._id,
+        { $set: req.body },
+        { new: true, projection:"-password -pastEvents" },
+        (err, updatedUser) => {
+            res.json(updatedUser);
+        }
+    );
+});
+
+// Get All Event related to Users
+router.get("/events", (req, res) => {
+    // Find events that user current join or past events
+    User.findById(req.user._id)
+        .populate("pastEvents")
+        .populate("interestedEvents")
+        .exec((err, foundUser) => {
+            // Find events that user organized
+            Event.find({ organiser: req.user._id }, (err, organizedEvents) => {
+                res.json({
+                    joinedEvents: foundUser.pastEvents,
+                    interestedEvents: foundUser.interestedEvents,
+                    organizedEvents,
+                });
+            });
+        });
 });
 
 // EXPORT

@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 const MONGO_URI =
 	process.env.MONGO_ATLAS || 'mongodb://localhost:27017/wivolunteer-api';
 const CORS_OPTIONS = {
-	origin: '*', // whitelist all for dev, to add client URL before deployment
+	origin: process.env.WHITELIST, // whitelist all for dev, to add client URL before deployment
 	credentials: true,
 	'Access-Control-Allow-Credentials': true,
 	methods: 'GET,HEAD,PUT,POST,DELETE',
