@@ -94,7 +94,7 @@ router.put('/:id/join', (req, res) => {
 							// Update event by adding particpant and decrement limit
 							Event.findByIdAndUpdate(
 								req.params.id,
-								{ $push: { participants: req.user._id }, $inc: { limit: -1 } },
+								{ $push: { participants: req.user._id } },
 								{ new: true },
 								(err, updatedEvent) => {
 									if (err) res.status(500).json({ error: err });
@@ -116,7 +116,7 @@ router.put('/:id/drop', (req, res) => {
 	// Update event by removing particpant and increment limit
 	Event.findByIdAndUpdate(
 		req.params.id,
-		{ $pull: { participants: req.user._id }, $inc: { limit: 1 } },
+		{ $pull: { participants: req.user._id } },
 		{ new: true },
 		(err, updatedEvent) => {
 			if (err) res.status(500).json({ error: err });
@@ -129,7 +129,6 @@ router.put('/:id/drop', (req, res) => {
 
 // Add participant to event interested array
 router.put('/:id/interested', (req, res) => {
-	// Update event by removing particpant and increment limit
 	Event.findByIdAndUpdate(
 		req.params.id,
 		{ $push: { interested: req.user._id } },
