@@ -8,7 +8,7 @@ const eventSchema = new mongoose.Schema({
 	organiser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 	participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 	interested: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-	limit: { type: Number, required: true },
+	limit: { type: Number, default: 1, required: true },
 	isCancelled: { type: Boolean, default: false },
 	description: String,
 	location: String,
