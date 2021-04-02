@@ -1,13 +1,13 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Event = require('../models/event.js');
-const User = require('../models/user.js');
-const setDateRange = require('./helper.js').setDateRange;
+const Event = require("../models/event.js");
+const User = require("../models/user.js");
+const setDateRange = require("./helper.js").setDateRange;
 
 //ROUTES
 
 // Show events of interest with start date from selected date
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
 	// If no date is selected, set selected date as today
 	const { startDate, endDate } = setDateRange(req);
 	User.findById(req.user._id, (err, foundUser) => {
@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
 				$lt: endDate,
 			},
 		})
-			.populate('organiser', 'username')
+			.populate("organiser", "username")
 			.sort({ dateTime: 1 })
 			.exec((err, events) => {
 				res.json(events);
@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
 
 // Get All Events
 // Show events of interest with start date from selected date
-router.get('/all', (req, res) => {
+router.get("/all", (req, res) => {
 	const { startDate, endDate } = setDateRange(req);
 	User.findById(req.user._id, (err, foundUser) => {
 		Event.find({
@@ -39,7 +39,7 @@ router.get('/all', (req, res) => {
 				$lt: endDate,
 			},
 		})
-			.populate('organiser', 'username')
+			.populate("organiser", "username")
 			.sort({ dateTime: 1 })
 			.exec((err, events) => {
 				res.json(events);
@@ -48,7 +48,7 @@ router.get('/all', (req, res) => {
 });
 
 // Get searched event
-router.get('/find', (req, res) => {
+router.get("/find", (req, res) => {
 	const { startDate, endDate } = setDateRange(req);
 	const categories = JSON.parse(req.query.cat);
 	User.findById(req.user._id, (err, foundUser) => {
@@ -60,7 +60,7 @@ router.get('/find', (req, res) => {
 				$lt: endDate,
 			},
 		})
-			.populate('organiser', 'username')
+			.populate("organiser", "username")
 			.sort({ dateTime: 1 })
 			.exec((err, events) => {
 				res.json(events);
@@ -70,16 +70,16 @@ router.get('/find', (req, res) => {
 
 // Show individual event
 
-router.get('/:id', (req, res) => {
+router.get("/:id", (req, res) => {
 	Event.findById(req.params.id)
-		.populate('organiser', 'username')
-		.populate('participants', 'username')
-		.populate('interested', 'username')
+		.populate("organiser", "username")
+		.populate("participants", "username")
+		.populate("interested", "username")
 		.exec()
 		.then((event) => {
 			if (!event) {
 				return res.status(404).json({
-					error: 'Event not found',
+					error: "Event not found",
 				});
 			}
 			res.status(200).json(event);
@@ -92,7 +92,7 @@ router.get('/:id', (req, res) => {
 });
 
 // Create a new event
-router.post('/', (req, res) => {
+router.post("/", (req, res) => {
 	// Set organiser as current user
 	req.body.organiser = req.user._id;
 	// Create event
@@ -105,12 +105,12 @@ router.post('/', (req, res) => {
 });
 
 // Update event details
-router.put('/:id/edit', (req, res) => {
+router.put("/:id/edit", (req, res) => {
 	// Check if current user match organiser
 	Event.findOne({ organiser: req.user._id }, (err, foundEvent) => {
 		if (!foundEvent)
 			res.status(403).json({
-				error: 'Unable to edit event, organiser mismatch.',
+				error: "Unable to edit event, organiser mismatch.",
 			});
 		else {
 			// Update event details
@@ -130,7 +130,7 @@ router.put('/:id/edit', (req, res) => {
 });
 
 // Add participant and decrement limit
-router.put('/:id/join', (req, res) => {
+router.put("/:id/join", (req, res) => {
 	// Check if organiser attempts to join own event
 	Event.findOne(
 		{
@@ -139,7 +139,7 @@ router.put('/:id/join', (req, res) => {
 		(err, foundEvent) => {
 			if (foundEvent)
 				res.status(403).json({
-					error: 'Organiser cannot be added to participants',
+					error: "Organiser cannot be added to participants",
 				});
 			else {
 				// Check if participant has joined event
@@ -148,7 +148,7 @@ router.put('/:id/join', (req, res) => {
 					(err, foundEvent) => {
 						if (foundEvent)
 							res.status(403).json({
-								error: 'Participant already joined event',
+								error: "Participant already joined event",
 							});
 						else {
 							// Update event by adding particpant and decrement limit
@@ -172,7 +172,7 @@ router.put('/:id/join', (req, res) => {
 });
 
 // Remove participant and increment event limit
-router.put('/:id/drop', (req, res) => {
+router.put("/:id/drop", (req, res) => {
 	// Update event by removing particpant and increment limit
 	Event.findByIdAndUpdate(
 		req.params.id,
@@ -188,7 +188,7 @@ router.put('/:id/drop', (req, res) => {
 });
 
 // Add participant to event interested array
-router.put('/:id/interested', (req, res) => {
+router.put("/:id/interested", (req, res) => {
 	Event.findByIdAndUpdate(
 		req.params.id,
 		{ $push: { interested: req.user._id } },
