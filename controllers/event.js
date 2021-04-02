@@ -69,9 +69,9 @@ router.get("/find", (req, res) => {
 
 router.get("/:id", (req, res) => {
     Event.findById(req.params.id)
-        .populate("organiser", "username")
-        .populate("participants", "username")
-        .populate("interested", "username")
+        .populate("organiser", "username contact")
+        .populate("participants", "username contact")
+        .populate("interested", "username contact")
         .exec()
         .then((event) => {
             if (!event) {

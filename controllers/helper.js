@@ -14,7 +14,7 @@ function generateJsonToken(foundUser, res) {
         process.env.JWT_SECRET,
         { expiresIn: process.env.TOKEN_EXPIRE_TIME },
         (err, jwtToken) => {
-            res.json({ jwtToken, user });
+            res.json({ jwtToken, user:foundUser });
         }
     );
 }
