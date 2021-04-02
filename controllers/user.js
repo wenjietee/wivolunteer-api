@@ -50,7 +50,7 @@ router.put("/profile", (req, res) => {
     User.findByIdAndUpdate(
         req.user._id,
         { $set: req.body },
-        { new: true, projection:"-password -pastEvents" },
+        { new: true, projection:"-password -pastEvents -interestedEvents" },
         (err, updatedUser) => {
             res.json(updatedUser);
         }

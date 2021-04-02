@@ -19,7 +19,7 @@ router.get("/", (req, res) => {
                 $lt: endDate,
             },
         })
-            .populate("organiser", "username")
+            .populate("organiser", "username").sort({dateTime: 1})
             .exec((err, events) => {
                 res.json(events);
             });
@@ -38,7 +38,7 @@ router.get("/all", (req, res) => {
                 $lt: endDate,
             },
         })
-            .populate("organiser", "username")
+            .populate("organiser", "username").sort({dateTime: 1})
             .exec((err, events) => {
                 res.json(events);
             });
@@ -58,7 +58,7 @@ router.get("/find", (req, res) => {
                 $lt: endDate,
             },
         })
-            .populate("organiser", "username")
+            .populate("organiser", "username").sort({dateTime: 1})
             .exec((err, events) => {
                 res.json(events);
             });
