@@ -22,7 +22,7 @@ function generateJsonToken(foundUser, res) {
 // Set date range of as 1 month
 function setDateRange(req) {
     // If no date is selected, set selected date as today
-    const filterDate = req.query.date || new Date();
+    const filterDate = req.query.date ? new Date(req.query.date) : new Date();
     const startDate = new Date();
     startDate.setDate(filterDate.getDate() + 1);
     const endDate = new Date();
