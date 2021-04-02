@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const feedbackSchema = new mongoose.Schema({
 	participant: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 	event: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' },
-	hasEnoughResources: [String],
+	hasEnoughResources: String,
 	isWellOrganised: Number,
 	isSatisfied: Number,
 });
