@@ -11,7 +11,7 @@ const generateJsonToken = require("./helper").generateJsonToken;
 // Get user profile data
 router.get("/profile", (req, res) => {
 	User.findById(req.user._id, "-password -pastEvents")
-		.populate("interestedEvents", "_id eventTitle")
+		.populate("interestedEvents")
 		.exec((err, foundUser) => {
 			res.json(foundUser);
 		});
@@ -19,9 +19,9 @@ router.get("/profile", (req, res) => {
 
 // Check if user is already authenticated
 router.get("/authenticate", (req, res) => {
-    User.findById(req.user._id, "-password", (err, foundUser) => {
-        res.json(foundUser);
-    });
+	User.findById(req.user._id, "-password", (err, foundUser) => {
+		res.json(foundUser);
+	});
 });
 
 // Create new user
