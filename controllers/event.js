@@ -131,37 +131,28 @@ router.put("/:id/edit", (req, res) => {
 
 // Add participant
 router.put("/:id/join", (req, res) => {
-	// Check if participant has joined event
-	Event.findOne({ participants: { $in: req.user._id } }, (err, foundEvent) => {
-		if (foundEvent)
-			res.status(403).json({
-				error: "Participant already joined event",
-			});
-		else {
-			// Update event by adding particpant
-			Event.findByIdAndUpdate(
-				req.params.id,
-				{ $push: { participants: req.user._id } },
-				{ new: true },
-				(err, updatedEvent) => {
-					if (err) res.status(500).json({ error: err });
-					else {
-						// Add event to User profile
-						User.findByIdAndUpdate(
-							req.user._id,
-							{ $push: { pastEvents: updatedEvent._id } },
-							(err, foundUser) => {
-								if (err) res.status(500).json({ error: err });
-								else {
-									res.status(201).json(updatedEvent);
-								}
-							}
-						);
+	// Update event by adding particpant
+	Event.findByIdAndUpdate(
+		req.params.id,
+		{ $push: { participants: req.user._id } },
+		{ new: true },
+		(err, updatedEvent) => {
+			if (err) res.status(500).json({ error: err });
+			else {
+				// Add event to User profile
+				User.findByIdAndUpdate(
+					req.user._id,
+					{ $push: { pastEvents: updatedEvent._id } },
+					(err, foundUser) => {
+						if (err) res.status(500).json({ error: err });
+						else {
+							res.status(201).json(updatedEvent);
+						}
 					}
-				}
-			);
+				);
+			}
 		}
-	});
+	);
 });
 
 // Remove participant
