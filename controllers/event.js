@@ -71,24 +71,24 @@ router.get("/find", (req, res) => {
 // Show individual event
 
 router.get("/:id", (req, res) => {
-    Event.findById(req.params.id)
-        .populate("organiser", "username contact")
-        .populate("participants", "username contact")
-        .populate("interested", "username contact")
-        .exec()
-        .then((event) => {
-            if (!event) {
-                return res.status(404).json({
-                    error: "Event not found",
-                });
-            }
-            res.status(200).json(event);
-        })
-        .catch((err) => {
-            res.status(500).json({
-                error: err,
-            });
-        });
+	Event.findById(req.params.id)
+		.populate("organiser", "username contact")
+		.populate("participants", "username contact")
+		.populate("interested", "username contact")
+		.exec()
+		.then((event) => {
+			if (!event) {
+				return res.status(404).json({
+					error: "Event not found",
+				});
+			}
+			res.status(200).json(event);
+		})
+		.catch((err) => {
+			res.status(500).json({
+				error: err,
+			});
+		});
 });
 
 // Create a new event
@@ -129,51 +129,44 @@ router.put("/:id/edit", (req, res) => {
 	});
 });
 
-// Add participant and decrement limit
+// Add participant
 router.put("/:id/join", (req, res) => {
-	// Check if organiser attempts to join own event
-	Event.findOne(
-		{
-			organiser: req.user._id,
-		},
-		(err, foundEvent) => {
-			if (foundEvent)
-				res.status(403).json({
-					error: "Organiser cannot be added to participants",
-				});
-			else {
-				// Check if participant has joined event
-				Event.findOne(
-					{ participants: { $in: req.user._id } },
-					(err, foundEvent) => {
-						if (foundEvent)
-							res.status(403).json({
-								error: "Participant already joined event",
-							});
-						else {
-							// Update event by adding particpant and decrement limit
-							Event.findByIdAndUpdate(
-								req.params.id,
-								{ $push: { participants: req.user._id } },
-								{ new: true },
-								(err, updatedEvent) => {
-									if (err) res.status(500).json({ error: err });
-									else {
-										res.status(201).json(updatedEvent);
-									}
+	// Check if participant has joined event
+	Event.findOne({ participants: { $in: req.user._id } }, (err, foundEvent) => {
+		if (foundEvent)
+			res.status(403).json({
+				error: "Participant already joined event",
+			});
+		else {
+			// Update event by adding particpant
+			Event.findByIdAndUpdate(
+				req.params.id,
+				{ $push: { participants: req.user._id } },
+				{ new: true },
+				(err, updatedEvent) => {
+					if (err) res.status(500).json({ error: err });
+					else {
+						// Add event to User profile
+						User.findByIdAndUpdate(
+							req.user._id,
+							{ $push: { pastEvents: updatedEvent._id } },
+							(err, foundUser) => {
+								if (err) res.status(500).json({ error: err });
+								else {
+									res.status(201).json(updatedEvent);
 								}
-							);
-						}
+							}
+						);
 					}
-				);
-			}
+				}
+			);
 		}
-	);
+	});
 });
 
-// Remove participant and increment event limit
+// Remove participant
 router.put("/:id/drop", (req, res) => {
-	// Update event by removing particpant and increment limit
+	// Update event by removing particpant
 	Event.findByIdAndUpdate(
 		req.params.id,
 		{ $pull: { participants: req.user._id } },
@@ -181,7 +174,17 @@ router.put("/:id/drop", (req, res) => {
 		(err, updatedEvent) => {
 			if (err) res.status(500).json({ error: err });
 			else {
-				res.status(201).json(updatedEvent);
+				// Remove event from User profile
+				User.findByIdAndUpdate(
+					req.user._id,
+					{ $pull: { pastEvents: updatedEvent._id } },
+					(err, foundUser) => {
+						if (err) res.status(500).json({ error: err });
+						else {
+							res.status(201).json(updatedEvent);
+						}
+					}
+				);
 			}
 		}
 	);
@@ -197,6 +200,27 @@ router.put("/:id/interested", (req, res) => {
 			User.findByIdAndUpdate(
 				req.user._id,
 				{ $push: { interestedEvents: updatedEvent._id } },
+				(err, foundUser) => {
+					if (err) res.status(500).json({ error: err });
+					else {
+						res.status(201).json(updatedEvent);
+					}
+				}
+			);
+		}
+	);
+});
+
+// Remove participant from event interested array
+router.put("/:id/uninterested", (req, res) => {
+	Event.findByIdAndUpdate(
+		req.params.id,
+		{ $pull: { interested: req.user._id } },
+		{ new: true },
+		(err, updatedEvent) => {
+			User.findByIdAndUpdate(
+				req.user._id,
+				{ $pull: { interestedEvents: updatedEvent._id } },
 				(err, foundUser) => {
 					if (err) res.status(500).json({ error: err });
 					else {
