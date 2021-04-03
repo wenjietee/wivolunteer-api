@@ -71,24 +71,24 @@ router.get("/find", (req, res) => {
 // Show individual event
 
 router.get("/:id", (req, res) => {
-	Event.findById(req.params.id)
-		.populate("organiser", "username")
-		.populate("participants", "username")
-		.populate("interested", "username")
-		.exec()
-		.then((event) => {
-			if (!event) {
-				return res.status(404).json({
-					error: "Event not found",
-				});
-			}
-			res.status(200).json(event);
-		})
-		.catch((err) => {
-			res.status(500).json({
-				error: err,
-			});
-		});
+    Event.findById(req.params.id)
+        .populate("organiser", "username contact")
+        .populate("participants", "username contact")
+        .populate("interested", "username contact")
+        .exec()
+        .then((event) => {
+            if (!event) {
+                return res.status(404).json({
+                    error: "Event not found",
+                });
+            }
+            res.status(200).json(event);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                error: err,
+            });
+        });
 });
 
 // Create a new event

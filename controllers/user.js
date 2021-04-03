@@ -19,10 +19,9 @@ router.get("/profile", (req, res) => {
 
 // Check if user is already authenticated
 router.get("/authenticate", (req, res) => {
-	const user = {};
-	user._id = req.user._id;
-	user.username = req.user.username;
-	res.json(user);
+    User.findById(req.user._id, "-password", (err, foundUser) => {
+        res.json(foundUser);
+    });
 });
 
 // Create new user

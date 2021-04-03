@@ -13,7 +13,7 @@ const eventSchema = new mongoose.Schema({
 	description: String,
 	location: String,
 	zipCode: String,
-	image: String,
+	image: {type: String, default: "https://cdn.pixabay.com/photo/2017/02/10/12/12/volunteer-2055042_1280.png"},
 	eventType: [String],
 });
 
