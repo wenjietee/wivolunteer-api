@@ -10,7 +10,7 @@ const generateJsonToken = require("./helper").generateJsonToken;
 
 // Get user profile data
 router.get("/profile", (req, res) => {
-	User.findById(req.user._id, "-password -pastEvents")
+	User.findById(req.user._id, "-password")
 		.populate("interestedEvents")
 		.exec((err, foundUser) => {
 			res.json(foundUser);
