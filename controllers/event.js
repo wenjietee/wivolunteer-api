@@ -145,7 +145,10 @@ router.put("/:id/join", (req, res) => {
 				// Add event to User profile
 				User.findByIdAndUpdate(
 					req.user._id,
-					{ $push: { pastEvents: updatedEvent._id } },
+					{
+						$push: { pastEvents: updatedEvent._id },
+						$pull: { interestedEvents: updatedEvent._id },
+					},
 					(err, foundUser) => {
 						if (err) res.status(500).json({ error: err });
 						else {
@@ -174,7 +177,10 @@ router.put("/:id/drop", (req, res) => {
 				// Remove event from User profile
 				User.findByIdAndUpdate(
 					req.user._id,
-					{ $pull: { pastEvents: updatedEvent._id } },
+					{
+						$pull: { pastEvents: updatedEvent._id },
+						$push: { interestedEvents: updatedEvent._id },
+					},
 					(err, foundUser) => {
 						if (err) res.status(500).json({ error: err });
 						else {
