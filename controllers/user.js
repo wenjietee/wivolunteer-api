@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user.js");
 const Event = require("../models/event.js");
 const generateJsonToken = require("./helper").generateJsonToken;
+const sortEvents = require("./helper").sortEvents;
 
 // ROUTES
 
@@ -71,14 +72,20 @@ router.get("/events", (req, res) => {
             populate: { path: "organiser", select: "username" },
         })
         .exec((err, foundUser) => {
-			// Find events that user organized
-			Event.find({ organiser: req.user._id }).populate("organiser", "username").exec((err, organizedEvents) => {
-				res.json({
-                    joinedEvents: foundUser.pastEvents,
-                    interestedEvents: foundUser.interestedEvents,
-                    organizedEvents,
+            // Find events that user organized
+            Event.find({ organiser: req.user._id })
+                .populate("organiser", "username")
+                .exec((err, organizedEvents) => {
+                    // Sorting events by dateTime
+                    sortEvents(foundUser.pastEvents);
+                    sortEvents(foundUser.interestedEvents);
+                    sortEvents(organizedEvents);
+                    res.json({
+                        joinedEvents: foundUser.pastEvents,
+                        interestedEvents: foundUser.interestedEvents,
+                        organizedEvents,
+                    });
                 });
-			})
         });
 });
 
