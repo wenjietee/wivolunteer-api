@@ -5,7 +5,7 @@ const router = express.Router();
 const User = require("../models/user");
 
 // Helper Functions
-const {generateJsonToken} = require("./helper");
+const { generateJsonToken, cancelNotify } = require("./helper");
 
 //ROUTES
 
@@ -24,6 +24,13 @@ router.post("/login", (req, res) => {
                 res.status(401).json({ error: "wrong password" });
             }
         }
+    });
+});
+
+// Email testing route
+router.get("/email-test", (req, res) => {
+    cancelNotify().then((info) => {
+        console.log(info.messageId);
     });
 });
 
