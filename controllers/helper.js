@@ -1,5 +1,6 @@
 const jsonwebtoken = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const moment = require("moment");
 
 // Generate Json Web Token with user details
 function generateJsonToken(foundUser, res) {
@@ -58,7 +59,7 @@ async function updateNotify(event) {
     const userEmails = event.participants.map(user => user.email);
     // console.log(userEmails);
     // Make function for general for update and cancel message;
-    const updateType = (event.isCancelled) ? "cancelled" : "updated";
+    const updateType = (event.isCancelled) ? "Cancelled" : "Updated";
 
     const mailOptions = {
         from: "WiVolunteer <do-not-reply@wivolunteer.com>",
@@ -67,20 +68,21 @@ async function updateNotify(event) {
         subject: `WiVolunteer - Event ${updateType}`,
         html: `<head>
         <style>
-            p{
-               color:red; 
-            }       
+            updated-type {
+                text-transform: lowercase;
+                font-weight: bold;
+            }      
         </style>
         </head>
         <body>
             <p>Hi</p>
-            <p>Please be informed that the following event that you have signed up has been ${updateType} by organiser</p>
+            <p>Please be informed that the following event that you have signed up has been <span id="updated-type">${updateType} <span> by organiser</p>
             <ul>
                 <li>Event Title: ${event.eventTitle}</li>
-                <li>Date: ${event.dateTime} </li>
-                <li>Time: </li>
+                <li>Date: ${moment(event.dateTime).format("ddd, DD MMM YYYY")} </li>
+                <li>Time: ${moment(event.dateTime).format("LT")}</li>
                 <li>Location: ${event.location} </li>
-                <li>Organiser: ${event.organiser} </li>
+                <li>Organiser: ${event.organiser.username} </li>
             </ul>
             <p>Please find more events to join <a href="https://wivolunteer.herokuapp.com/">here</a></p>
             <footer>(This is an auto-generated message. Please do not reply directly to email).</footer>
