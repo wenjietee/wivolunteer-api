@@ -118,7 +118,7 @@ router.put("/:id/edit", (req, res) => {
                 { $set: req.body },
                 { new: true }
             )
-                .populate("participants", "username email")
+                .populate("participants", "username email").populate("organiser", "username")
 
                 .exec((err, updatedEvent) => {
                     if (err) res.status(500).json({ error: err });
