@@ -41,8 +41,8 @@ function sortEvents(events) {
     });
 }
 
-// Create function to send cancellation email
-async function cancelNotify() {
+// Create function to send cancellation and update email to participants
+async function updateNotify(event) {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -51,15 +51,40 @@ async function cancelNotify() {
         },
     });
 
+    const userEmails = event.participants.map(user => user.email);
+    // console.log(userEmails);
+    // Make function for general for update and cancel message;
+    const updateType = (event.isCancelled) ? "cancelled" : "updated";
+
     const mailOptions = {
         from: "WiVolunteer <do-not-reply@wivolunteer.com>",
         to: "noreply.wivolunteer@gmail.com",
-        bcc: "jesstoh23@gmail.com", 
-        subject: "WiVolunteer - Event Cancelled",
-        html: "<h1>Sorry event cancelled</h1>",
+        bcc: userEmails,
+        subject: `WiVolunteer - Event ${updateType}`,
+        html: `<head>
+        <style>
+            p{
+               color:red; 
+            }       
+        </style>
+        </head>
+        <body>
+            <p>Hi</p>
+            <p>Please be informed that the following event that you have signed up has been ${updateType} by organiser</p>
+            <ul>
+                <li>Event Title: ${event.eventTitle}</li>
+                <li>Date: ${event.dateTime} </li>
+                <li>Time: </li>
+                <li>Location: ${event.location} </li>
+                <li>Organiser: ${event.organiser} </li>
+            </ul>
+            <p>Please find more events to join <a href="https://wivolunteer.herokuapp.com/">here</a></p>
+            <footer>(This is an auto-generated message. Please do not reply directly to email).</footer>
+            </footer>
+        </body>`,
     };
 
-    return transporter.sendMail(mailOptions);    
+    return transporter.sendMail(mailOptions);
 }
 
-module.exports = { generateJsonToken, setDateRange, sortEvents, cancelNotify };
+module.exports = { generateJsonToken, setDateRange, sortEvents, updateNotify };
