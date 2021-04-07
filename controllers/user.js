@@ -71,14 +71,25 @@ router.get("/events", (req, res) => {
             populate: { path: "organiser", select: "username" },
         })
         .exec((err, foundUser) => {
-			// Find events that user organized
-			Event.find({ organiser: req.user._id }).populate("organiser", "username").exec((err, organizedEvents) => {
-				res.json({
-                    joinedEvents: foundUser.pastEvents,
-                    interestedEvents: foundUser.interestedEvents,
-                    organizedEvents,
+            // Find events that user organized
+            Event.find({ organiser: req.user._id })
+                .populate("organiser", "username")
+                .exec((err, organizedEvents) => {
+                    foundUser.pastEvents.sort((eventA, eventB) => {
+                        return eventA.dateTime - eventB.dateTime;
+                    });
+                    foundUser.interestedEvents.sort((eventA, eventB) => {
+                        return eventA.dateTime - eventB.dateTime;
+                    });
+                    organizedEvents.sort((eventA, eventB) => {
+                        return eventA.dateTime - eventB.dateTime;
+                    });
+                    res.json({
+                        joinedEvents: foundUser.pastEvents,
+                        interestedEvents: foundUser.interestedEvents,
+                        organizedEvents,
+                    });
                 });
-			})
         });
 });
 
