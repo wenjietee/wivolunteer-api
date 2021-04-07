@@ -33,4 +33,11 @@ function setDateRange(req) {
     return { startDate, endDate };
 }
 
-module.exports = { generateJsonToken, setDateRange };
+function sortEvents(events) {
+    events.sort((eventA, eventB) => {
+        return eventA.dateTime - eventB.dateTime;
+    });
+}
+
+
+module.exports = { generateJsonToken, setDateRange, sortEvents };
