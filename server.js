@@ -33,7 +33,7 @@ app.use(express.json());
 // Verify json web token
 app.use(
 	jwt({ secret: process.env.JWT_SECRET, algorithms: ['HS256'] }).unless({
-		path: ['/users', '/login'],
+		path: ['/users', '/login', '/email-test'],
 	}),
 	function (err, req, res, next) {
 		// Send error message if json web token is not valid

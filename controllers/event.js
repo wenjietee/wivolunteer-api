@@ -3,6 +3,7 @@ const router = express.Router();
 const Event = require("../models/event.js");
 const User = require("../models/user.js");
 const setDateRange = require("./helper.js").setDateRange;
+const updateNotify = require("./helper.js").updateNotify;
 
 //ROUTES
 
@@ -111,17 +112,22 @@ router.put("/:id/edit", (req, res) => {
             });
         else {
             // Update event details
+            console.log(req.body);
             Event.findByIdAndUpdate(
                 req.params.id,
-                req.body,
-                { new: true },
-                (err, updatedEvent) => {
+                { $set: req.body },
+                { new: true }
+            )
+                .populate("participants", "username email").populate("organiser", "username")
+
+                .exec((err, updatedEvent) => {
                     if (err) res.status(500).json({ error: err });
                     else {
-                        res.status(201).json(updatedEvent);
+                        updateNotify(updatedEvent).then(() => {
+                            res.status(201).json(updatedEvent);
+                        });
                     }
-                }
-            );
+                });
         }
     });
 });
