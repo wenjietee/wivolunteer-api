@@ -123,7 +123,6 @@ router.put("/:id/edit", (req, res) => {
                 .exec((err, updatedEvent) => {
                     if (err) res.status(500).json({ error: err });
                     else {
-                        console.log(updatedEvent);
                         updateNotify(updatedEvent).then(() => {
                             res.status(201).json(updatedEvent);
                         });

@@ -43,6 +43,10 @@ function sortEvents(events) {
 
 // Create function to send cancellation and update email to participants
 async function updateNotify(event) {
+    // Not sending email if no participant or interested users
+    if (!event.participants.length && !event.interested.length) {
+        return
+    }
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
