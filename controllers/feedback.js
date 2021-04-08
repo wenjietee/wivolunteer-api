@@ -7,14 +7,14 @@ const Feedback = require('../models/feedback.js');
 // Fetch feedback info for the event
 router.get('/:eventId', (req, res) => {
 	Feedback.find({ event: req.params.eventId })
-		.populate('event', 'eventTitle')
+		.populate('event', 'eventTitle limit participants')
 		.populate('participant', 'username')
 		.exec()
 		.then((feedbacks) => {
 			// if no feedback found return error
 			if (!feedbacks || !feedbacks.length) {
 				return res.status(404).json({
-					error: 'No feedback avaliable.',
+					error: 'No feedback available.',
 				});
 			}
 			// return feedbacks
