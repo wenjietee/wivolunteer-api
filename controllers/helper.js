@@ -38,7 +38,7 @@ function setDateRange(req) {
 // Sort array of events by dateTime
 function sortEvents(events) {
     events.sort((eventA, eventB) => {
-        return eventA.dateTime - eventB.dateTime;
+        return eventB.dateTime - eventA.dateTime;
     });
 }
 
