@@ -11,12 +11,6 @@ router.get('/:eventId', (req, res) => {
 		.populate('participant', 'username')
 		.exec()
 		.then((feedbacks) => {
-			// if no feedback found return error
-			if (!feedbacks || !feedbacks.length) {
-				return res.status(404).json({
-					error: 'No feedback available.',
-				});
-			}
 			// return feedbacks
 			res.status(200).json(feedbacks);
 		})
