@@ -5,13 +5,47 @@ const Feedback = require('../models/feedback.js');
 //ROUTES
 
 // Fetch feedback info for the event
-router.get('/feedback/:id', (req, res) => {
-	res.send('fetch feedback');
+router.get('/:eventId', (req, res) => {
+	Feedback.find({ event: req.params.eventId })
+		.populate('event', 'eventTitle limit participants')
+		.populate('participant', 'username')
+		.exec()
+		.then((feedbacks) => {
+			// return feedbacks
+			res.status(200).json(feedbacks);
+		})
+		.catch((err) => {
+			res.status(500).json({
+				error: err,
+			});
+		});
 });
 
 // Create a new feedback for the event
-router.post('/feedback/:id', (req, res) => {
-	res.send('create a feedback');
+router.post('/:eventId', (req, res) => {
+	// Set participant as current user
+	req.body.participant = req.user._id;
+	// Set event as params id
+	req.body.event = req.params.eventId;
+	// Check if user has already submitted feedback
+	Feedback.findOne(
+		{ event: req.body.event, participant: req.body.participant },
+		(err, foundFeedback) => {
+			if (foundFeedback)
+				res.status(403).json({
+					error: 'Feedback has already been submitted by user for this event.',
+				});
+			else {
+				// Create feedback
+				Feedback.create(req.body, (err, createdFeedback) => {
+					if (err) res.status(500).json({ error: err });
+					else {
+						res.status(201).json(createdFeedback);
+					}
+				});
+			}
+		}
+	);
 });
 
 // EXPORT

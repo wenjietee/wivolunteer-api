@@ -8,12 +8,12 @@ const eventSchema = new mongoose.Schema({
 	organiser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 	participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 	interested: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-	limit: { type: Number, required: true },
+	limit: { type: Number, default: 1, required: true },
 	isCancelled: { type: Boolean, default: false },
 	description: String,
 	location: String,
 	zipCode: String,
-	image: String,
+	image: {type: String, default: "https://cdn.pixabay.com/photo/2017/02/10/12/12/volunteer-2055042_1280.png"},
 	eventType: [String],
 });
 
