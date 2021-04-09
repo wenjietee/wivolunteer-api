@@ -104,6 +104,9 @@ router.post("/", (req, res) => {
 
 // Update event details
 router.put("/:id/edit", (req, res) => {
+    if (!req.body.image) {
+        delete req.body.image;
+    }
     // Check if current user match organiser
     Event.findOne({ organiser: req.user._id }, (err, foundEvent) => {
         if (!foundEvent)
@@ -112,7 +115,7 @@ router.put("/:id/edit", (req, res) => {
             });
         else {
             // Update event details
-            console.log(req.body);
+            // console.log(req.body);
             Event.findByIdAndUpdate(
                 req.params.id,
                 { $set: req.body },

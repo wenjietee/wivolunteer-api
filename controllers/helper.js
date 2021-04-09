@@ -60,6 +60,8 @@ async function updateNotify(event) {
     // console.log(userEmails);
     // Make function for general for update and cancel message;
     const updateType = (event.isCancelled) ? "Cancelled" : "Updated";
+    // Different redirect link based on if event is cancelled or edited
+    const redirectMessage = (event.isCancelled) ? `Please find more events to join <a href="https://wivolunteer.herokuapp.com/">here</a>` : `Please find more details <a href="https://wivolunteer.herokuapp.com/event/${event._id}">here</a> `
 
     const mailOptions = {
         from: "WiVolunteer <do-not-reply@wivolunteer.com>",
@@ -68,7 +70,7 @@ async function updateNotify(event) {
         subject: `WiVolunteer - Event ${updateType}`,
         html: `<head>
         <style>
-            updated-type {
+            #updated-type {
                 text-transform: lowercase;
                 font-weight: bold;
             }      
@@ -76,15 +78,15 @@ async function updateNotify(event) {
         </head>
         <body>
             <p>Hi</p>
-            <p>Please be informed that the following event that you have signed up has been <span id="updated-type">${updateType} <span> by organiser</p>
+            <p>Please be informed that the following event that you have signed up has been <span id="updated-type">${updateType} </span> by organiser.</p>
             <ul>
                 <li>Event Title: ${event.eventTitle}</li>
                 <li>Date: ${moment(event.dateTime).format("ddd, DD MMM YYYY")} </li>
                 <li>Time: ${moment(event.dateTime).format("LT")}</li>
-                <li>Location: ${event.location} </li>
+                <li>Location: ${event.location || ""} </li>
                 <li>Organiser: ${event.organiser.username} </li>
             </ul>
-            <p>Please find more events to join <a href="https://wivolunteer.herokuapp.com/">here</a></p>
+            <p>${redirectMessage}</p>
             <footer>(This is an auto-generated message. Please do not reply directly to email).</footer>
             </footer>
         </body>`,
